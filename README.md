@@ -1,1 +1,1 @@
-Deflate object graph of models into json, send somewhere, receive, inflate back into object graph of models
+Convenience class for sending / replying to messages via json over some transport (websocket, ajax, derp)
