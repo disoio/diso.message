@@ -76,7 +76,7 @@ class Message
           Model = if (model_name of @models)
             @models[model_name]
           else
-            console.error("Can't find Model for #{model_name}")
+            throw new Error("Can't find Model for #{model_name}")
             null
 
         for k,v of obj
@@ -186,15 +186,6 @@ class Message
   # The name of the reply to this message
   replyName : ()->
     "#{@name}Reply"
-
-
-  # replyEventName
-  # --------------
-  # The event name that gets triggered by this message's reply
-  # This is used in the [ClientStore](../Client/ClientStore.html)
-  # in order to trigger load callback once the data is available
-  replyEventName : ()->
-    "message:#{@replyName()}:id:#{@id}"
 
 
   # isError

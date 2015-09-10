@@ -1,6 +1,6 @@
 {
   "name": "diso.message",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Deflate object graph of models into json, send somewhere, receive, inflate back into object graph of models",
   "license": "substanceware",
   "main": "index.js",

@@ -48,7 +48,14 @@
           if (Message.model_key in obj) {
             model_name = obj[Message.model_key];
             delete obj[Message.model_key];
-            Model = model_name in Message.models ? Message.models[model_name] : (console.error("Can't find Model for " + model_name), null);
+            Model = (function() {
+              if (model_name in this.models) {
+                return this.models[model_name];
+              } else {
+                throw new Error("Can't find Model for " + model_name);
+                return null;
+              }
+            }).call(Message);
           }
           for (k in obj) {
             v = obj[k];
@@ -126,10 +133,6 @@
 
     Message.prototype.replyName = function() {
       return this.name + "Reply";
-    };
-
-    Message.prototype.replyEventName = function() {
-      return "message:" + (this.replyName()) + ":id:" + this.id;
     };
 
     Message.prototype.isError = function() {
