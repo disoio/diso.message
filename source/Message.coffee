@@ -2,9 +2,10 @@
 # ------------------
 # [shortid](https://github.com/dylang/shortid)
 # [type-of-is](https://github.com/stephenhandley/type-of-is)
-ShortId        = require('shortid')
-Type           = require('type-of-is')
-InflateDeflate = require('inflatedeflate')
+# [bloon](https://github.com/stephenhandley/bloon)
+ShortId = require('shortid')
+Type    = require('type-of-is')
+Bloon   = require('bloon')
 
 # Message
 # =======
@@ -43,7 +44,7 @@ class Message
     @id    = args.id || ShortId.generate()
     @token = args.token
     @data  = if ('data' of args)
-      {inflate} = InflateDeflate(
+      {inflate} = Bloon(
         models    : @constructor.models
         model_key : @constructor.model_key
       )
@@ -88,7 +89,7 @@ class Message
     if @data
       message.data = @data
 
-    {deflate} = InflateDeflate(
+    {deflate} = Bloon(
       models    : @constructor.models
       model_key : @constructor.model_key
     )

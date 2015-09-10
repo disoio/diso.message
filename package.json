@@ -13,7 +13,7 @@
     "url": "http://person.sh"
   },
   "dependencies": {
-    "inflatedeflate": "^1.0.0",
+    "bloon": "^1.0.0",
     "shortid": "^2.2.2",
     "type-of-is": "^3.4.0"
   },
