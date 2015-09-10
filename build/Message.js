@@ -1,12 +1,12 @@
 (function() {
-  var InDeflate, Message, ShortId, Type,
+  var InflateDeflate, Message, ShortId, Type,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   ShortId = require('shortid');
 
   Type = require('type-of-is');
 
-  InDeflate = require('indeflate');
+  InflateDeflate = require('inflatedeflate');
 
   Message = (function() {
     Message.prototype.name = null;
@@ -31,7 +31,7 @@
       this.name = args.name;
       this.id = args.id || ShortId.generate();
       this.token = args.token;
-      this.data = 'data' in args ? ((ref = InDeflate({
+      this.data = 'data' in args ? ((ref = InflateDeflate({
         models: this.constructor.models,
         model_key: this.constructor.model_key
       }), inflate = ref.inflate, ref), inflate(args.data)) : {};
@@ -68,7 +68,7 @@
       if (this.data) {
         message.data = this.data;
       }
-      deflate = InDeflate({
+      deflate = InflateDeflate({
         models: this.constructor.models,
         model_key: this.constructor.model_key
       }).deflate;

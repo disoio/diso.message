@@ -1,6 +1,6 @@
 {
   "name": "diso.message",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Convenience class for sending / replying to messages via json over some transport (websocket, ajax, derp)",
   "license": "substanceware",
   "main": "index.js",
@@ -13,7 +13,7 @@
     "url": "http://person.sh"
   },
   "dependencies": {
-    "indeflate": "^1.0.0",
+    "inflatedeflate": "^1.0.0",
     "shortid": "^2.2.2",
     "type-of-is": "^3.4.0"
   },

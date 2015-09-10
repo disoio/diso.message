@@ -2,9 +2,9 @@
 # ------------------
 # [shortid](https://github.com/dylang/shortid)
 # [type-of-is](https://github.com/stephenhandley/type-of-is)
-ShortId   = require('shortid')
-Type      = require('type-of-is')
-InDeflate = require('indeflate')
+ShortId        = require('shortid')
+Type           = require('type-of-is')
+InflateDeflate = require('inflatedeflate')
 
 # Message
 # =======
@@ -43,7 +43,7 @@ class Message
     @id    = args.id || ShortId.generate()
     @token = args.token
     @data  = if ('data' of args)
-      {inflate} = InDeflate(
+      {inflate} = InflateDeflate(
         models    : @constructor.models
         model_key : @constructor.model_key
       )
@@ -88,7 +88,7 @@ class Message
     if @data
       message.data = @data
 
-    {deflate} = InDeflate(
+    {deflate} = InflateDeflate(
       models    : @constructor.models
       model_key : @constructor.model_key
     )

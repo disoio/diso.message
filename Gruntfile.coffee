@@ -31,3 +31,5 @@ module.exports = (grunt)->
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-docco')
+
+  grunt.registerTask('build', ['coffee'])

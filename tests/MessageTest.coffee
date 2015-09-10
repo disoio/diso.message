@@ -37,7 +37,6 @@ module.exports = {
         token : 'abc'
         data  : data
       )
-
       json = msg.stringify()
       msg_from_json = Message.parse(json)
 
