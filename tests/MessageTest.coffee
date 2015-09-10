@@ -1,5 +1,5 @@
 Assert = require('assert')
-Message = require('../source/Message')
+Message = require('../build/Message')
 
 class Base
   constructor : (data)->
@@ -28,7 +28,7 @@ module.exports = {
     'should properly stringify/parse' : ()->
       data = {
         b : new Barf({x : 10})
-        c : [new Borf({x : 11}), new Derp({x : 12})]
+        c : [new Borf({x : 11})]
       }
 
       msg = new Message(
@@ -43,5 +43,6 @@ module.exports = {
 
       Assert.equal(msg_from_json.data.b.x, data.b.x);
       Assert.equal(msg_from_json.data.c[0].constructor, data.c[0].constructor)
+
   }
 }

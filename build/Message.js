@@ -1,75 +1,14 @@
 (function() {
-  var Message, ShortId, Type,
+  var InDeflate, Message, ShortId, Type,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   ShortId = require('shortid');
 
   Type = require('type-of-is');
 
+  InDeflate = require('indeflate');
+
   Message = (function() {
-    Message.model_key = '$model';
-
-    Message.models = null;
-
-    Message.deflate = function(obj) {
-      var k, res, v;
-      switch (Type(obj)) {
-        case Array:
-          return obj.map(Message.deflate);
-        case Object:
-          res = {};
-          for (k in obj) {
-            v = obj[k];
-            res[k] = Message.deflate(v);
-          }
-          return res;
-        default:
-          if (obj && obj.deflate && Type(obj.deflate, Function)) {
-            return obj.deflate({
-              model_key: Message.model_key
-            });
-          } else {
-            return obj;
-          }
-      }
-    };
-
-    Message.inflate = function(obj) {
-      var Model, k, model_name, res, v;
-      if (!Message.models) {
-        return obj;
-      }
-      switch (Type(obj)) {
-        case Array:
-          return obj.map(Message.inflate);
-        case Object:
-          res = {};
-          Model = null;
-          if (Message.model_key in obj) {
-            model_name = obj[Message.model_key];
-            delete obj[Message.model_key];
-            Model = (function() {
-              if (model_name in this.models) {
-                return this.models[model_name];
-              } else {
-                throw new Error("Can't find Model for " + model_name);
-                return null;
-              }
-            }).call(Message);
-          }
-          for (k in obj) {
-            v = obj[k];
-            res[k] = Message.inflate(v);
-          }
-          if (Model) {
-            res = new Model(res);
-          }
-          return res;
-        default:
-          return obj;
-      }
-    };
-
     Message.prototype.name = null;
 
     Message.prototype.id = null;
@@ -80,14 +19,22 @@
 
     Message.prototype.error = null;
 
+    Message.models = null;
+
+    Message.model_key = null;
+
     function Message(args) {
+      var inflate, ref;
       if (!args.name) {
         throw new Error("Message must have name");
       }
       this.name = args.name;
       this.id = args.id || ShortId.generate();
       this.token = args.token;
-      this.data = 'data' in args ? this.constructor.inflate(args.data) : {};
+      this.data = 'data' in args ? ((ref = InDeflate({
+        models: this.constructor.models,
+        model_key: this.constructor.model_key
+      }), inflate = ref.inflate, ref), inflate(args.data)) : {};
       this.error = null;
       if (args.error) {
         this.error = args.error;
@@ -109,7 +56,7 @@
     };
 
     Message.prototype.stringify = function() {
-      var message;
+      var deflate, message;
       message = {
         name: this.name,
         id: this.id,
@@ -121,7 +68,11 @@
       if (this.data) {
         message.data = this.data;
       }
-      message = this.constructor.deflate(message);
+      deflate = InDeflate({
+        models: this.constructor.models,
+        model_key: this.constructor.model_key
+      }).deflate;
+      message = deflate(message);
       return JSON.stringify(message);
     };
 

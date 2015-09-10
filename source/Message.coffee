@@ -2,102 +2,22 @@
 # ------------------
 # [shortid](https://github.com/dylang/shortid)
 # [type-of-is](https://github.com/stephenhandley/type-of-is)
-ShortId = require('shortid')
-Type = require('type-of-is')
-
+ShortId   = require('shortid')
+Type      = require('type-of-is')
+InDeflate = require('indeflate')
 
 # Message
 # =======
 # A WebSocket message
 class Message
-
-  # attribute name used for serializing a model's type with its
-  # data via deflate
-  @model_key : '$model'
-
-  # object mapping from model names to constructors that
-  # needs to be set via Message.setModels
-  @models : null
-
-
-  # deflate
-  # -------
-  # Deflate the passed object so that it can be passed over the
-  # wire as json and inflated on the other end into models
-  #
-  # **obj** : object to deflate
-  @deflate : (obj)=>
-    switch Type(obj)
-      when Array
-        obj.map(@deflate)
-
-      when Object
-        res = {}
-        for k,v of obj
-          res[k] = @deflate(v)
-        res
-
-      else
-        if (obj and obj.deflate and Type(obj.deflate, Function))
-          obj.deflate(
-            model_key : @model_key
-          )
-        else
-          obj
-
-
-  # inflate
-  # --------
-  # Inflate the passed json object by converting plain json objects
-  # into instances of their associated model.
-  #
-  # **obj** : object to inflate
-  @inflate : (obj)=>
-    unless @models
-      return obj
-
-    switch Type(obj)
-      # map over arrays
-      when Array
-        obj.map(@inflate)
-
-      # traverse object and inflate its values
-      when Object
-        res = {}
-
-        Model = null
-
-        # if there is a @model_key attribute present in the json,
-        # use it to lookup the associated model
-        if (@model_key of obj)
-          model_name = obj[@model_key]
-          delete obj[@model_key]
-
-          Model = if (model_name of @models)
-            @models[model_name]
-          else
-            throw new Error("Can't find Model for #{model_name}")
-            null
-
-        for k,v of obj
-          res[k] = @inflate(v)
-
-        if Model
-          res = new Model(res)
-
-        res
-
-      # return everything else as is
-      else
-        obj
-
-
   name  : null  # name for this message
   id    : null  # unique id for this message (shared by its reply)
   token : null  # jwt auth token
   data  : null  # the data for this message
   error : null  # an error if needed
 
+  @models : null
+  @model_key : null
 
   # constructor
   # -----------
@@ -123,7 +43,11 @@ class Message
     @id    = args.id || ShortId.generate()
     @token = args.token
     @data  = if ('data' of args)
-      @constructor.inflate(args.data)
+      {inflate} = InDeflate(
+        models    : @constructor.models
+        model_key : @constructor.model_key
+      )
+      inflate(args.data)
     else
       {}
 
@@ -164,7 +88,11 @@ class Message
     if @data
       message.data = @data
 
-    message = @constructor.deflate(message)
+    {deflate} = InDeflate(
+      models    : @constructor.models
+      model_key : @constructor.model_key
+    )
+    message = deflate(message)
     JSON.stringify(message)
 
 

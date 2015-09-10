@@ -1,7 +1,7 @@
 {
   "name": "diso.message",
-  "version": "1.0.1",
-  "description": "Deflate object graph of models into json, send somewhere, receive, inflate back into object graph of models",
+  "version": "1.0.2",
+  "description": "Convenience class for sending messages over some transport (websocket, ajax, derp)",
   "license": "substanceware",
   "main": "index.js",
   "scripts": {
@@ -13,6 +13,7 @@
     "url": "http://person.sh"
   },
   "dependencies": {
+    "indeflate": "^1.0.0",
     "shortid": "^2.2.2",
     "type-of-is": "^3.4.0"
   },
