@@ -19,22 +19,26 @@
 
     Message.prototype.error = null;
 
-    Message.models = null;
-
-    Message.model_key = null;
+    Message.setModels = function(models) {
+      var bloon;
+      if (models == null) {
+        models = {};
+      }
+      bloon = Bloon({
+        models: models
+      });
+      this._inflate = bloon.inflate;
+      return this._deflate = bloon.deflate;
+    };
 
     function Message(args) {
-      var inflate, ref;
       if (!args.name) {
         throw new Error("Message must have name");
       }
       this.name = args.name;
       this.id = args.id || ShortId.generate();
       this.token = args.token;
-      this.data = 'data' in args ? ((ref = Bloon({
-        models: this.constructor.models,
-        model_key: this.constructor.model_key
-      }), inflate = ref.inflate, ref), inflate(args.data)) : {};
+      this.data = 'data' in args ? this.constructor._inflate(args.data) : {};
       this.error = null;
       if (args.error) {
         this.error = args.error;
@@ -56,7 +60,7 @@
     };
 
     Message.prototype.stringify = function() {
-      var deflate, message;
+      var message;
       message = {
         name: this.name,
         id: this.id,
@@ -68,11 +72,7 @@
       if (this.data) {
         message.data = this.data;
       }
-      deflate = Bloon({
-        models: this.constructor.models,
-        model_key: this.constructor.model_key
-      }).deflate;
-      message = deflate(message);
+      message = this.constructor._deflate(message);
       return JSON.stringify(message);
     };
 
@@ -102,6 +102,8 @@
     return Message;
 
   })();
+
+  Message.setModels();
 
   module.exports = Message;
 
