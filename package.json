@@ -1,6 +1,6 @@
 {
   "name": "diso.message",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Convenience class for sending / replying to messages via json over some transport (websocket, ajax, derp)",
   "license": "substanceware",
   "main": "index.js",

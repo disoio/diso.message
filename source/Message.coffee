@@ -17,8 +17,17 @@ class Message
   data  : null  # the data for this message
   error : null  # an error if needed
 
-  @models : null
-  @model_key : null
+  # @setModels
+  # ----------
+  # Set models to be used by Bloon
+  #
+  # **models* object mapping names to model constructors
+  @setModels : (models = {})->
+    bloon = Bloon(
+      models : models
+    )
+    @_inflate = bloon.inflate
+    @_deflate = bloon.deflate
 
   # constructor
   # -----------
@@ -44,11 +53,7 @@ class Message
     @id    = args.id || ShortId.generate()
     @token = args.token
     @data  = if ('data' of args)
-      {inflate} = Bloon(
-        models    : @constructor.models
-        model_key : @constructor.model_key
-      )
-      inflate(args.data)
+      @constructor._inflate(args.data)
     else
       {}
 
@@ -89,11 +94,7 @@ class Message
     if @data
       message.data = @data
 
-    {deflate} = Bloon(
-      models    : @constructor.models
-      model_key : @constructor.model_key
-    )
-    message = deflate(message)
+    message = @constructor._deflate(message)
     JSON.stringify(message)
 
 
@@ -142,5 +143,6 @@ class Message
   in : (names)->
     (@name in names)
 
+Message.setModels()
 
 module.exports = Message
