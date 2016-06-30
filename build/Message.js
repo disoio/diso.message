@@ -1,8 +1,8 @@
 (function() {
-  var Bloon, Message, ShortId, Type,
+  var Bloon, Message, Type, Uuid,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  ShortId = require('shortid');
+  Uuid = require('node-uuid');
 
   Type = require('type-of-is');
 
@@ -36,7 +36,7 @@
         throw new Error("Message must have name");
       }
       this.name = args.name;
-      this.id = args.id || ShortId.generate();
+      this.id = args.id || Uuid.v1();
       this.token = args.token;
       this.data = 'data' in args ? this.constructor._inflate(args.data) : {};
       this.error = null;
@@ -52,11 +52,14 @@
       var error, message_data;
       try {
         message_data = JSON.parse(json);
+        return new this(message_data);
       } catch (_error) {
         error = _error;
-        return this.error("JSON.parse failed");
+        return new this({
+          name: 'InvalidJson',
+          error: error
+        });
       }
-      return new this(message_data);
     };
 
     Message.prototype.stringify = function() {

@@ -19,11 +19,11 @@ class Derp extends Base
 module.exports = {
   'Message' : {
     beforeEach : ()->
-      Message.models = {
+      Message.setModels(
         Barf : Barf
         Borf : Borf
         Derp : Derp
-      }
+      )
 
     'should properly stringify/parse' : ()->
       data = {
@@ -43,5 +43,18 @@ module.exports = {
       Assert.equal(msg_from_json.data.b.x, data.b.x);
       Assert.equal(msg_from_json.data.c[0].constructor, data.c[0].constructor)
 
+    'should handle invalid message json' : ()->
+      message_str = """
+        {
+          this: isnot
+          valid: {
+            {json
+          }
+        }
+      """
+
+      msg = Message.parse(message_str)
+      Assert(msg.error.message.match(/SyntaxError/))
+      Assert.equal(msg.name, 'InvalidJson')
   }
 }

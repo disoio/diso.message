@@ -1,11 +1,11 @@
 # NPM dependencies
 # ------------------
-# [shortid](https://github.com/dylang/shortid)
+# [node-uuid](https://github.com/broofa/node-uuid)
 # [type-of-is](https://github.com/stephenhandley/type-of-is)
 # [bloon](https://github.com/stephenhandley/bloon)
-ShortId = require('shortid')
-Type    = require('type-of-is')
-Bloon   = require('bloon')
+Uuid  = require('node-uuid')
+Type  = require('type-of-is')
+Bloon = require('bloon')
 
 # Message
 # =======
@@ -50,7 +50,7 @@ class Message
       throw new Error("Message must have name")
 
     @name  = args.name
-    @id    = args.id || ShortId.generate()
+    @id    = args.id || Uuid.v1()
     @token = args.token
     @data  = if ('data' of args)
       @constructor._inflate(args.data)
@@ -72,10 +72,13 @@ class Message
   @parse : (json)->
     try
       message_data = JSON.parse(json)
+      new @(message_data)
     catch error
-      return @error("JSON.parse failed")
+      new @(
+        name: 'InvalidJson'
+        error: error
+      )
 
-    new @(message_data)
 
 
   # stringify
